@@ -5,7 +5,7 @@
 ** Login   <chauvo_t@epitech.net>
 **
 ** Started on  Fri Jun 12 16:29:26 2015 chauvo_t
-** Last update Fri Jun 19 18:42:28 2015 chauvo_t
+** Last update Fri Jun 19 18:47:46 2015 chauvo_t
 */
 
 #include <linux/fs.h>
@@ -60,6 +60,15 @@ const struct file_operations yolofs_file_operations = {
 	.llseek		= generic_file_llseek,
 };
 
+const struct file_operations yolofs_dir_operations = {
+        .open           = dcache_dir_open,
+        .release        = dcache_dir_close,
+        .llseek         = dcache_dir_lseek,
+        .read           = generic_read_dir,
+        .iterate        = yolofs_readdir,
+        .fsync          = noop_fsync,
+};
+
 const struct inode_operations yolofs_file_inode_operations = {
 	.setattr	= simple_setattr,
 	.getattr	= simple_getattr,
@@ -106,6 +115,11 @@ static ssize_t yolofs_write(struct file *file, const char __user *buf,
 	count = kernel_write(yolofile, buf, count, *ppos);
 	filp_close(yolofile, NULL);
 	return count;
+}
+
+static int yolofs_readdir(struct file *file, struct dir_context *ctx)
+{
+	return file->f_op->iterate(file, ctx);
 }
 
 static int yolofs_mknod(struct inode *dir, struct dentry *dentry,
@@ -182,7 +196,7 @@ static struct inode *yolofs_make_inode(struct super_block *sb,
 		break;
 	case S_IFDIR:
 		in->i_op = &yolofs_dir_inode_operations;
-		in->i_fop = &simple_dir_operations;
+		in->i_fop = &yolofs_dir_operations;
 		/* directory inodes start off with i_nlink == 2 (for ".") */
 		inc_nlink(in);
 		break;

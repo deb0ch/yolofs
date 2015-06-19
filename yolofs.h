@@ -5,7 +5,7 @@
 ** Login   <chauvo_t@epitech.net>
 **
 ** Started on  Tue Jun 16 16:36:43 2015 chauvo_t
-** Last update Fri Jun 19 18:42:40 2015 chauvo_t
+** Last update Fri Jun 19 18:49:05 2015 chauvo_t
 */
 
 #ifndef YOLOFS_H_
@@ -33,6 +33,7 @@ struct dentry *mount_yolodev(struct file_system_type *fs_type,
  */
 static ssize_t yolofs_read(struct file *file, char __user *buf, size_t n, loff_t *ppos);
 static ssize_t yolofs_write(struct file *, const char __user *, size_t n, loff_t *ppos);
+static int yolofs_readdir(struct file *file, struct dir_context *ctx);
 static int yolofs_mknod(struct inode *dir, struct dentry *dentry,
 			umode_t mode, dev_t dev);
 static int yolofs_mkdir(struct inode * dir, struct dentry * dentry,
